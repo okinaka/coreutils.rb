@@ -6,16 +6,24 @@ require 'optparse'
 require 'kconv'
 
 regexp = '';
-OptionParser.new {|opt|
+skip = false;
+OptionParser.new do |opt|
   opt.on('-e VAL', '--regexp VAL') {|v| regexp = v.toutf8}
+  opt.on('-l', '--files-with-matches') {|v| skip = true }
   opt.parse!(ARGV)
-}
+end
 regexp = ARGV.shift if regexp == '' and ARGV.size > 0
 rule = Regexp.new(regexp)
 dispFilename = (ARGV.size > 1)
 while line = ARGF.gets
   next unless rule =~ line.toutf8
-  print ARGF.filename + ':' if dispFilename
-  print line
+  if skip
+    puts ARGF.filename
+    ARGF.skip
+  elsif dispFilename
+    print ARGF.filename + ':'+ line
+  else
+    print line
+  end
 end
 
