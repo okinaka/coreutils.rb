@@ -6,10 +6,10 @@ require 'optparse'
 require 'kconv'
 
 regexp = '';
-skip = false;
+onlyFilename = false;
 OptionParser.new do |opt|
   opt.on('-e VAL', '--regexp VAL') {|v| regexp = v.toutf8}
-  opt.on('-l', '--files-with-matches') {|v| skip = true }
+  opt.on('-l', '--files-with-matches') {|v| onlyFilename = true }
   opt.parse!(ARGV)
 end
 regexp = ARGV.shift if regexp == '' and ARGV.size > 0
@@ -17,7 +17,7 @@ rule = Regexp.new(regexp)
 dispFilename = (ARGV.size > 1)
 while line = ARGF.gets
   next unless rule =~ line.toutf8
-  if skip
+  if onlyFilename
     puts ARGF.filename
     ARGF.skip
   elsif dispFilename
